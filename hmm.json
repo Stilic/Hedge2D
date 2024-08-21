@@ -1,0 +1,16 @@
+{
+  "dependencies": [
+    {
+      "name": "hxcpp",
+      "type": "haxelib",
+      "version": null
+    },
+    {
+      "name": "raylib-hx",
+      "type": "git",
+      "dir": null,
+      "ref": "main",
+      "url": "https://github.com/foreignsasquatch/raylib-hx.git"
+    }
+  ]
+}
