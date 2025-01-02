@@ -24,19 +24,6 @@ class Level {
 	var tileset:Array<IntPoint> = [];
 	var tiles:Array<Array<Int>> = [];
 
-	function checkTile(image:Image, x:Int, y:Int):IntPoint {
-		x = x * TILE_SIZE;
-		y = y * TILE_SIZE;
-		for (px in 0...TILE_SIZE) {
-			for (py in 0...TILE_SIZE) {
-				final color = GetImageColor(image, x + px, y + py);
-				if (color.a == 255)
-					return {x: x, y: y};
-			}
-		}
-		return null;
-	}
-
 	public function new(id:String) {
 		final data:LevelData = Json.parse(File.getContent('assets/levels/$id.json'));
 		final imagePath = 'assets/tilesets/${data.tileset}.png';
@@ -45,9 +32,17 @@ class Level {
 
 		for (y in 0...Std.int(image.height / TILE_SIZE)) {
 			for (x in 0...Std.int(image.width / TILE_SIZE)) {
-				final tile = checkTile(image, x, y);
-				if (tile != null)
-					tileset.push(tile);
+				final x = x * TILE_SIZE;
+				final y = y * TILE_SIZE;
+				for (px in 0...TILE_SIZE) {
+					for (py in 0...TILE_SIZE) {
+						final color = GetImageColor(image, x + px, y + py);
+						if (color.a == 255) {
+							tileset.push({x: x, y: y});
+							break;
+						}
+					}
+				}
 			}
 		}
 
