@@ -1,5 +1,4 @@
 import raylib.Raylib.*;
-import raylib.Types;
 import sonic.Level;
 import sonic.characters.Sonic;
 
