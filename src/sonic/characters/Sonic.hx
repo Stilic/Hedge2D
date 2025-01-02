@@ -1,6 +1,7 @@
 package sonic.characters;
 
-import Raylib.Keys;
+import raylib.Raylib.*;
+import raylib.Types;
 
 enum abstract Direction(Int) to Int {
 	var Left = -1;
@@ -45,7 +46,7 @@ class Sonic extends Object {
 		heightRadius = 19;
 		hitboxWidthRadius = 8;
 		hitboxHeightRadius = heightRadius - 3;
-		texture = Raylib.loadTexture("assets/sonic.png");
+		texture = LoadTexture("assets/sonic.png");
 	}
 
 	inline function applyFriction(friction:Float)
@@ -58,15 +59,15 @@ class Sonic extends Object {
 		if (onGround) {
 			switch (action) {
 				case Idle:
-					if (Raylib.isKeyDown(Keys.LEFT) || Raylib.isKeyDown(Keys.RIGHT))
+					if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_RIGHT))
 						action = Walk;
-					else if (Raylib.isKeyDown(Keys.DOWN) && Raylib.isKeyPressed(Keys.SPACE)) {
+					else if (IsKeyDown(KEY_DOWN) && IsKeyPressed(KEY_SPACE)) {
 						spinRev = 0;
 						action = Spindash;
 					}
 
 				case Walk:
-					if (Raylib.isKeyDown(Keys.LEFT)) {
+					if (IsKeyDown(KEY_LEFT)) {
 						if (groundSpeed > 0) // if moving to the right
 						{
 							groundSpeed -= DECELERATION_SPEED;
@@ -80,7 +81,7 @@ class Sonic extends Object {
 							if (groundSpeed <= -TOP_SPEED)
 								groundSpeed = -TOP_SPEED;
 						}
-					} else if (Raylib.isKeyDown(Keys.RIGHT)) {
+					} else if (IsKeyDown(KEY_RIGHT)) {
 						if (groundSpeed < 0) // if moving to the left
 						{
 							groundSpeed += DECELERATION_SPEED;
@@ -102,12 +103,12 @@ class Sonic extends Object {
 						}
 					}
 
-					if (Math.abs(groundSpeed) >= 1 && Raylib.isKeyPressed(Keys.DOWN))
+					if (Math.abs(groundSpeed) >= 1 && IsKeyPressed(KEY_DOWN))
 						action = Roll;
 
 				case Roll:
 					var friction = ROLL_DECELERATION_SPEED;
-					if (groundSpeed < 0 ? Raylib.isKeyDown(Keys.RIGHT) : Raylib.isKeyDown(Keys.LEFT))
+					if (groundSpeed < 0 ? IsKeyDown(KEY_RIGHT) : IsKeyDown(KEY_LEFT))
 						friction += ROLL_FRICTION_SPEED;
 					applyFriction(friction);
 
@@ -119,11 +120,11 @@ class Sonic extends Object {
 					}
 
 				case Spindash:
-					if (Raylib.isKeyReleased(Keys.DOWN)) {
+					if (IsKeyReleased(KEY_DOWN)) {
 						groundSpeed = (8 + Math.floor(spinRev) / 2) * direction;
 						action = Roll;
 					} else {
-						if (spinRev < 8 && Raylib.isKeyPressed(Keys.SPACE))
+						if (spinRev < 8 && IsKeyPressed(KEY_SPACE))
 							spinRev += 2;
 						spinRev = bleed(spinRev);
 					}
@@ -136,7 +137,7 @@ class Sonic extends Object {
 				ySpeed = groundSpeed * -Math.sin(groundAngle);
 			}
 
-			if (action != Spindash && Raylib.isKeyPressed(Keys.SPACE)) {
+			if (action != Spindash && IsKeyPressed(KEY_SPACE)) {
 				onGround = false;
 				action = Jump;
 
@@ -148,16 +149,16 @@ class Sonic extends Object {
 			final notHurt = action != Hurt;
 
 			if (notHurt) {
-				if (Raylib.isKeyDown(Keys.LEFT)) {
+				if (IsKeyDown(KEY_LEFT)) {
 					if (xSpeed > -TOP_SPEED)
 						xSpeed -= AIR_ACCELERATION_SPEED;
-				} else if (Raylib.isKeyDown(Keys.RIGHT)) {
+				} else if (IsKeyDown(KEY_RIGHT)) {
 					if (xSpeed < TOP_SPEED)
 						xSpeed += AIR_ACCELERATION_SPEED;
 				}
 			}
 
-			if (notHurt && action == Jump && !Raylib.isKeyDown(Keys.SPACE))
+			if (notHurt && action == Jump && !IsKeyDown(KEY_SPACE))
 				ySpeed = Math.max(ySpeed, -4);
 			ySpeed = Math.min(ySpeed + (notHurt ? GRAVITY_FORCE : HURT_GRAVITY_FORCE), 16);
 

@@ -1,32 +1,33 @@
-import Raylib.Colors;
+import raylib.Raylib.*;
+import raylib.Types;
 import sonic.Level;
 import sonic.characters.Sonic;
 
 class Main {
 	static function main() {
-		Raylib.initWindow(320, 224, "Sonic Eclipse");
-		Raylib.setTargetFPS(60);
+		InitWindow(320, 224, "Sonic Eclipse");
+		SetTargetFPS(60);
 
 		final level = new Level("ghz1");
 
 		final sonic = new Sonic();
 		sonic.y = 80;
 
-		while (!Raylib.windowShouldClose()) {
-			final dt = Raylib.getFrameTime();
+		while (!WindowShouldClose()) {
+			final dt = GetFrameTime();
 			sonic.update(dt);
 
-			Raylib.beginDrawing();
-			Raylib.clearBackground(Colors.BLUE);
+			BeginDrawing();
+			ClearBackground(BLUE);
 
 			level.draw();
 			sonic.draw();
 
-			Raylib.endDrawing();
+			EndDrawing();
 		}
 
-		Raylib.unloadTexture(level.texture);
-		Raylib.unloadTexture(sonic.texture);
-		Raylib.closeWindow();
+		UnloadTexture(level.texture);
+		UnloadTexture(sonic.texture);
+		CloseWindow();
 	}
 }

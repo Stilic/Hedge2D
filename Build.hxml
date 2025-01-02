@@ -1,6 +1,6 @@
 -cp src
--cpp bin/cpp
+-cpp bin
 -main Main
 -lib raylib-hx
 -D no_console
---cmd rm -rf bin/cpp/assets && cp -r assets bin/cpp
+--cmd rm -rf bin/assets && cp -r assets bin

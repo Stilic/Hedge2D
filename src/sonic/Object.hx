@@ -1,14 +1,12 @@
 package sonic;
 
-import Raylib.Colors;
-import Raylib.Vector2;
-import Raylib.Rectangle;
-import Raylib.Texture2D;
+import raylib.Raylib.*;
+import raylib.Types;
 
 class Object {
-	static final source:Rectangle = Rectangle.create(0, 0, 0, 0);
-	static final destination:Rectangle = Rectangle.create(0, 0, 0, 0);
-	static final origin:Vector2 = Vector2.create(0, 0);
+	static final source:Rectangle = new Rectangle(0, 0, 0, 0);
+	static final destination:Rectangle = new Rectangle(0, 0, 0, 0);
+	static final origin:Vector2 = new Vector2(0, 0);
 
 	static inline function getSizeFromRadius(radius:Int):Int
 		return radius == 0 ? 0 : radius * 2 + 1;
@@ -38,7 +36,7 @@ class Object {
 	public var hitboxWidthRadius(default, set):Int = 0;
 	public var hitboxHeightRadius(default, set):Int = 0;
 
-	public var texture:Texture2D;
+	public var texture:Texture;
 	public var flipX:Bool = false;
 	public var flipY:Bool = false;
 
@@ -63,7 +61,7 @@ class Object {
 		origin.x = halfWidth;
 		origin.y = halfHeight;
 
-		Raylib.drawTexturePro(texture, source, destination, origin, angle, Colors.WHITE);
+		DrawTexturePro(texture, source, destination, origin, angle, WHITE);
 	}
 
 	@:noCompletion

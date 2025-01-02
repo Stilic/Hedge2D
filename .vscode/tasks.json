@@ -3,18 +3,22 @@
   "tasks": [
     {
       "label": "Build",
-      "type": "haxe",
-      "args": "active configuration"
+      "type": "hxml",
+      "file": "Build.hxml",
+      "group": "build"
     },
     {
       "label": "Run",
       "type": "shell",
-      "command": "cd bin/cpp && ./Main"
+      "command": "cd bin && ./Main"
     },
     {
       "label": "Build and run",
       "dependsOrder": "sequence",
-      "dependsOn": ["Build", "Run"],
+      "dependsOn": [
+        "Build",
+        "Run"
+      ],
       "problemMatcher": [],
       "group": {
         "kind": "build",

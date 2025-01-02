@@ -2,9 +2,8 @@ package sonic;
 
 import haxe.Json;
 import sys.io.File;
-import Raylib.Image;
-import Raylib.Texture2D;
-import Raylib.Colors;
+import raylib.Raylib.*;
+import raylib.Types;
 
 typedef IntPoint = {
 	x:Int,
@@ -20,7 +19,7 @@ typedef LevelData = {
 class Level {
 	static inline var TILE_SIZE:Int = 16;
 
-	public var texture:Texture2D;
+	public var texture:Texture;
 
 	var tileset:Array<IntPoint> = [];
 	var tiles:Array<Array<Int>> = [];
@@ -30,7 +29,7 @@ class Level {
 		y = y * TILE_SIZE;
 		for (px in 0...TILE_SIZE) {
 			for (py in 0...TILE_SIZE) {
-				final color = Raylib.getImageColor(image, x + px, y + py);
+				final color = GetImageColor(image, x + px, y + py);
 				if (color.a == 255)
 					return {x: x, y: y};
 			}
@@ -41,7 +40,7 @@ class Level {
 	public function new(id:String) {
 		final data:LevelData = Json.parse(File.getContent('assets/levels/$id.json'));
 		final imagePath = 'assets/tilesets/${data.tileset}.png';
-		final image = Raylib.loadImage(imagePath);
+		final image = LoadImage(imagePath);
 		tiles = data.tiles;
 
 		for (y in 0...Std.int(image.height / TILE_SIZE)) {
@@ -52,8 +51,8 @@ class Level {
 			}
 		}
 
-		texture = Raylib.loadTextureFromImage(image);
-		Raylib.unloadImage(image);
+		texture = LoadTextureFromImage(image);
+		UnloadImage(image);
 	}
 
 	public function draw() {
@@ -71,7 +70,7 @@ class Level {
 
 				Object.origin.x = y * TILE_SIZE;
 
-				Raylib.drawTextureRec(texture, Object.source, Object.origin, Colors.WHITE);
+				DrawTextureRec(texture, Object.source, Object.origin, WHITE);
 			}
 		}
 	}
