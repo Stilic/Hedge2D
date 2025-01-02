@@ -4,7 +4,7 @@ import sonic.characters.Sonic;
 
 class Main {
 	static function main() {
-		InitWindow(320, 224, "Sonic Eclipse");
+		InitWindow(320, 224, "Hedge2D");
 		SetTargetFPS(60);
 
 		final level = new Level("ghz1");
