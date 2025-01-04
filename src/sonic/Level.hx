@@ -5,11 +5,6 @@ import sys.io.File;
 import raylib.Raylib.*;
 import raylib.Types;
 
-typedef IntPoint = {
-	x:Int,
-	y:Int
-}
-
 typedef LevelData = {
 	tileset:String,
 	tiles:Array<Array<Int>>
@@ -21,33 +16,15 @@ class Level {
 
 	public var texture:Texture;
 
-	var tileset:Array<IntPoint> = [];
-	var tiles:Array<Array<Int>> = [];
+	var columns:Int;
+	var tiles:Array<Array<Int>>;
 
 	public function new(id:String) {
 		final data:LevelData = Json.parse(File.getContent('assets/levels/$id.json'));
-		final imagePath = 'assets/tilesets/${data.tileset}.png';
-		final image = LoadImage(imagePath);
+		final texturePath = 'assets/tilesets/${data.tileset}.png';
+		texture = LoadTexture(texturePath);
+		columns = Std.int(texture.width / TILE_SIZE);
 		tiles = data.tiles;
-
-		for (y in 0...Std.int(image.height / TILE_SIZE)) {
-			for (x in 0...Std.int(image.width / TILE_SIZE)) {
-				final x = x * TILE_SIZE;
-				final y = y * TILE_SIZE;
-				for (px in 0...TILE_SIZE) {
-					for (py in 0...TILE_SIZE) {
-						final color = GetImageColor(image, x + px, y + py);
-						if (color.a == 255) {
-							tileset.push({x: x, y: y});
-							break;
-						}
-					}
-				}
-			}
-		}
-
-		texture = LoadTextureFromImage(image);
-		UnloadImage(image);
 	}
 
 	public function draw() {
@@ -56,16 +33,19 @@ class Level {
 			set = tiles[i];
 			Object.origin.y = i * TILE_SIZE;
 			for (y in 0...set.length) {
-				final tile = tileset[set[y]];
+				final tile:Int = set[y];
+				if (tile != -1) {
+					final posX:Int = tile * TILE_SIZE;
 
-				Object.source.x = tile.x;
-				Object.source.y = tile.y;
-				Object.source.width = TILE_SIZE;
-				Object.source.height = TILE_SIZE;
+					Object.source.x = posX;
+					Object.source.y = Std.int(tile / columns) * TILE_SIZE;
+					Object.source.width = TILE_SIZE;
+					Object.source.height = TILE_SIZE;
 
-				Object.origin.x = y * TILE_SIZE;
+					Object.origin.x = y * TILE_SIZE;
 
-				DrawTextureRec(texture, Object.source, Object.origin, WHITE);
+					DrawTextureRec(texture, Object.source, Object.origin, WHITE);
+				}
 			}
 		}
 	}
