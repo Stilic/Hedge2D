@@ -37,7 +37,7 @@ class Main {
 		level = new Level("ghz1");
 
 		final sonic = new Sonic();
-		sonic.y = 80;
+		sonic.y = 5 * Level.TILE_SIZE;
 
 		final editorTileColor = new Color(255, 255, 255, 128);
 		var editorLastX = -1;
@@ -49,7 +49,7 @@ class Main {
 
 			final mouseWheelMove = GetMouseWheelMove();
 			if (mouseWheelMove != 0) {
-				tile = Util.sign(mouseWheelMove);
+				tile += Util.sign(mouseWheelMove);
 				final max = level.lines * level.columns;
 				if (tile < 0)
 					tile = max;
