@@ -12,19 +12,35 @@ typedef LevelData = {
 
 @:access(sonic.Object)
 class Level {
-	static inline var TILE_SIZE:Int = 16;
+	public static inline var TILE_SIZE:Int = 16;
 
-	public var texture:Texture;
+	var path:String;
+	var tileset:String;
 
-	var columns:Int;
-	var tiles:Array<Array<Int>>;
+	public var texture(default, null):Texture;
+
+	public var lines(default, null):Int;
+	public var columns(default, null):Int;
+
+	public var tiles:Array<Array<Int>>;
 
 	public function new(id:String) {
-		final data:LevelData = Json.parse(File.getContent('assets/levels/$id.json'));
-		final texturePath = 'assets/tilesets/${data.tileset}.png';
+		path = 'assets/levels/$id.json';
+		final data:LevelData = Json.parse(File.getContent(path));
+
+		tileset = data.tileset;
+		final texturePath = 'assets/tilesets/${tileset}.png';
 		texture = LoadTexture(texturePath);
+
+		lines = Std.int(texture.height / TILE_SIZE);
 		columns = Std.int(texture.width / TILE_SIZE);
+
 		tiles = data.tiles;
+	}
+
+	public function save() {
+		final data:LevelData = {tileset: tileset, tiles: tiles};
+		File.saveContent(path, Json.stringify(data));
 	}
 
 	public function drawTile(x:Float, y:Float, tile:Int, color:Color) {
@@ -47,8 +63,8 @@ class Level {
 			y = i * TILE_SIZE;
 			for (x in 0...set.length) {
 				final tile = set[x];
-				if (tile != -1)
-					drawTile(x * TILE_SIZE, y, tile, WHITE);
+				if (tile != 0)
+					drawTile(x * TILE_SIZE, y, tile - 1, WHITE);
 			}
 		}
 	}
