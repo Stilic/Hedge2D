@@ -35,9 +35,7 @@ class Level {
 			for (y in 0...set.length) {
 				final tile:Int = set[y];
 				if (tile != -1) {
-					final posX:Int = tile * TILE_SIZE;
-
-					Object.source.x = posX;
+					Object.source.x = tile * TILE_SIZE;
 					Object.source.y = Std.int(tile / columns) * TILE_SIZE;
 					Object.source.width = TILE_SIZE;
 					Object.source.height = TILE_SIZE;
