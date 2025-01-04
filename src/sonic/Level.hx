@@ -27,23 +27,28 @@ class Level {
 		tiles = data.tiles;
 	}
 
+	public function drawTile(x:Float, y:Float, tile:Int, color:Color) {
+		Object.source.x = tile * TILE_SIZE;
+		Object.source.y = Std.int(tile / columns) * TILE_SIZE;
+		Object.source.width = TILE_SIZE;
+		Object.source.height = TILE_SIZE;
+
+		Object.origin.x = x;
+		Object.origin.y = y;
+
+		DrawTextureRec(texture, Object.source, Object.origin, color);
+	}
+
 	public function draw() {
 		var set:Array<Int>;
+		var y:Int;
 		for (i in 0...tiles.length) {
 			set = tiles[i];
-			Object.origin.y = i * TILE_SIZE;
-			for (y in 0...set.length) {
-				final tile:Int = set[y];
-				if (tile != -1) {
-					Object.source.x = tile * TILE_SIZE;
-					Object.source.y = Std.int(tile / columns) * TILE_SIZE;
-					Object.source.width = TILE_SIZE;
-					Object.source.height = TILE_SIZE;
-
-					Object.origin.x = y * TILE_SIZE;
-
-					DrawTextureRec(texture, Object.source, Object.origin, WHITE);
-				}
+			y = i * TILE_SIZE;
+			for (x in 0...set.length) {
+				final tile = set[x];
+				if (tile != -1)
+					drawTile(x * TILE_SIZE, y, tile, WHITE);
 			}
 		}
 	}

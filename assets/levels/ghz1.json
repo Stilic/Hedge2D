@@ -1,4 +1,4 @@
 {
   "tileset": "ghz",
-  "tiles": [[1]]
+  "tiles": [[32], [32]]
 }
