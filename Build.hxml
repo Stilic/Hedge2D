@@ -3,4 +3,5 @@
 -main Main
 -lib raylib-hx
 -D no_console
+-D RAYLIB_WAYLAND_DISPLAY
 --cmd rm -rf bin/assets && cp -r assets bin
