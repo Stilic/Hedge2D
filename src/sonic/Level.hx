@@ -10,6 +10,7 @@ typedef LevelData = {
 	tiles:Array<Array<Int>>
 }
 
+// TODO: layer system (each layer contains a specific kind of element: collision tiles, visual tiles, objects...)
 @:access(sonic.Object)
 class Level {
 	public static inline var TILE_SIZE:Int = 16;
