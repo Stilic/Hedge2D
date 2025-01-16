@@ -19,7 +19,7 @@ interface ITileContainer {
 
 @:access(sonic.Object)
 class TiledLayer extends Layer implements ILoader implements IDrawable implements ITileContainer {
-	public var tileSize(default, null):Int = 32;
+	public var tileSize(default, null):Int = 16;
 
 	public var texture(default, null):Texture;
 	public var tiles:Array<Array<Int>>;
