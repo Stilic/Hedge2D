@@ -93,7 +93,7 @@ class Main {
 			EndDrawing();
 		}
 
-		UnloadTexture(level.texture);
+		level.unload();
 		UnloadTexture(sonic.texture);
 		CloseWindow();
 	}

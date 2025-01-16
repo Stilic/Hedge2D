@@ -4,10 +4,10 @@ import haxe.Json;
 import sys.io.File;
 import raylib.Raylib.*;
 import raylib.Types;
-import sonic.Common.IDrawable;
+import sonic.Common;
 
 class Layer {
-	// TODO: add entities
+	// TODO: add objects
 }
 
 interface ITileContainer {
@@ -18,8 +18,8 @@ interface ITileContainer {
 }
 
 @:access(sonic.Object)
-class TiledLayer extends Layer implements IDrawable implements ITileContainer {
-	public var tileSize(default, null):Int = 16;
+class TiledLayer extends Layer implements ILoader implements IDrawable implements ITileContainer {
+	public var tileSize(default, null):Int = 32;
 
 	public var texture(default, null):Texture;
 	public var tiles:Array<Array<Int>>;
@@ -61,9 +61,13 @@ class TiledLayer extends Layer implements IDrawable implements ITileContainer {
 			}
 		}
 	}
+
+	public function unload() {
+		UnloadTexture(texture);
+	}
 }
 
-class CollisionLayer extends Layer implements ITileContainer {
+class CollisionLayer extends Layer implements ILoader implements ITileContainer {
 	public var tileSize(default, null):Int = 32;
 
 	public var image(default, null):Image;
@@ -72,20 +76,22 @@ class CollisionLayer extends Layer implements ITileContainer {
 	public var lines(default, null):Int;
 	public var columns(default, null):Int;
 
-	public function new() {
+	public function new(tiles:Array<Array<Int>>) {
 		image = LoadImage('assets/tilesets/collision.png');
 
 		lines = Std.int(image.height / tileSize);
 		columns = Std.int(image.width / tileSize);
+
+		this.tiles = tiles;
+	}
+
+	public function unload() {
+		UnloadImage(image);
 	}
 }
 
-// TODO: layer system (each layer contains a specific kind of element: collision tiles, visual tiles, objects...)
-class Level {
+class Level implements ILoader {
 	var path:String;
-	var tileset:String;
-
-	public var texture(default, null):Texture;
 
 	public var layers(default, null):Array<Layer> = [];
 
@@ -98,7 +104,7 @@ class Level {
 					switch (cast(layer.type, String)) {
 						case "collision":
 							if (Reflect.hasField(layer, "tiles"))
-								layers.push(new CollisionLayer());
+								layers.push(new CollisionLayer(layer.tiles));
 						case "tiled":
 							if (Reflect.hasField(layer, "set") && Reflect.hasField(layer, "tiles"))
 								layers.push(new TiledLayer(layer.set, layer.tiles));
@@ -106,16 +112,19 @@ class Level {
 			}
 		} else
 			throw "No `layers` field found.";
-
-		tileset = data.tileset;
-		final texturePath = 'assets/tilesets/${tileset}.png';
-		texture = LoadTexture(texturePath);
 	}
 
 	public function draw() {
 		for (layer in layers) {
 			if (layer is IDrawable)
 				cast(layer, IDrawable).draw();
+		}
+	}
+
+	public function unload() {
+		for (layer in layers) {
+			if (layer is ILoader)
+				cast(layer, ILoader).unload();
 		}
 	}
 

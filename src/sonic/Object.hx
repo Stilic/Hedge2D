@@ -2,7 +2,7 @@ package sonic;
 
 import raylib.Raylib.*;
 import raylib.Types;
-import sonic.Common.IDrawable;
+import sonic.Common;
 
 class Object implements IDrawable {
 	static final source:Rectangle = new Rectangle(0, 0, 0, 0);
