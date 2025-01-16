@@ -6,10 +6,11 @@ import sonic.characters.Sonic;
 
 class Main {
 	var level:Level;
+	var currentLayer:TiledLayer;
 	var tile = 1;
 
 	function addTile(x:Int, y:Int) {
-		final tiles = level.tiles;
+		final tiles = currentLayer.tiles;
 		var set = tiles[y];
 		if (set == null)
 			set = [];
@@ -22,7 +23,7 @@ class Main {
 	}
 
 	function removeTile(x:Int, y:Int) {
-		final tiles = level.tiles;
+		final tiles = currentLayer.tiles;
 		var set = tiles[y];
 		if (set != null && x < set.length) {
 			set[x] = 0;
@@ -35,9 +36,15 @@ class Main {
 		SetTargetFPS(60);
 
 		level = new Level("ghz1");
+		for (layer in level.layers) {
+			if (layer is TiledLayer) {
+				currentLayer = cast layer;
+				break;
+			}
+		}
 
 		final sonic = new Sonic();
-		sonic.y = 5 * Level.TILE_SIZE;
+		sonic.y = 5 * currentLayer.tileSize;
 
 		final editorTileColor = new Color(255, 255, 255, 128);
 		var editorLastX = -1;
@@ -50,7 +57,7 @@ class Main {
 			final mouseWheelMove = GetMouseWheelMove();
 			if (mouseWheelMove != 0) {
 				tile += Util.sign(mouseWheelMove);
-				final max = level.lines * level.columns;
+				final max = currentLayer.lines * currentLayer.columns;
 				if (tile < 0)
 					tile = max;
 				else if (tile > max)
@@ -58,8 +65,8 @@ class Main {
 			}
 
 			final mousePosition = GetMousePosition();
-			final tileX = Std.int(mousePosition.x / Level.TILE_SIZE);
-			final tileY = Std.int(mousePosition.y / Level.TILE_SIZE);
+			final tileX = Std.int(mousePosition.x / currentLayer.tileSize);
+			final tileY = Std.int(mousePosition.y / currentLayer.tileSize);
 			if (editorLastX != tileX || editorLastY != tileY) {
 				editorLastX = tileX;
 				editorLastY = tileY;
@@ -72,8 +79,8 @@ class Main {
 			else if (IsMouseButtonPressed(1))
 				removeTile(tileX, tileY);
 
-			if ((IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyPressed(KEY_S))
-				level.save();
+			// if ((IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyPressed(KEY_S))
+			// 	level.save();
 
 			BeginDrawing();
 			ClearBackground(BLUE);
@@ -81,7 +88,7 @@ class Main {
 			sonic.draw();
 			level.draw();
 
-			level.drawTile(tileX * Level.TILE_SIZE, tileY * Level.TILE_SIZE, tile, editorTileColor);
+			currentLayer.drawTile(tileX * currentLayer.tileSize, tileY * currentLayer.tileSize, tile, editorTileColor);
 
 			EndDrawing();
 		}
