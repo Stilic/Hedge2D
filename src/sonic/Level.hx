@@ -68,9 +68,8 @@ class TiledLayer extends Layer implements ILoader implements IDrawable implement
 	}
 }
 
-// TODO: revert tile size back to 16
 class CollisionLayer extends Layer implements ILoader implements ITileContainer {
-	public var tileSize(default, null):Int = 32;
+	public var tileSize(default, null):Int = 16;
 
 	public var image(default, null):Image;
 	public var tiles:Array<Array<Int>>;
@@ -108,7 +107,7 @@ class Level implements ILoader {
 							if (Reflect.hasField(layer, "tiles"))
 							{
 								if (debug)
-									layers.push(new TiledLayer("collision", layer.tiles, 32));
+									layers.push(new TiledLayer("collision", layer.tiles));
 								else
 									layers.push(new CollisionLayer(layer.tiles));
 							}
