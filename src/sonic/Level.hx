@@ -101,25 +101,20 @@ class Level implements ILoader {
 		final data = Json.parse(File.getContent(path));
 		if (Reflect.hasField(data, "layers")) {
 			for (layer in cast(data.layers, Array<Dynamic>)) {
-				if (!debug && Reflect.hasField(layer, "type")) {
+				if (Reflect.hasField(layer, "type"))
 					switch (cast(layer.type, String)) {
 						case "collision":
 							if (Reflect.hasField(layer, "tiles"))
-								layers.push(new CollisionLayer(layer.tiles));
+							{
+								if (debug)
+									layers.push(new TiledLayer("collision", layer.tiles, 32));
+								else
+									layers.push(new CollisionLayer(layer.tiles));
+							}
 						case "tiled":
 							if (Reflect.hasField(layer, "set") && Reflect.hasField(layer, "tiles"))
 								layers.push(new TiledLayer(layer.set, layer.tiles));
 					}
-				} else {
-					switch (cast(layer.type, String)) {
-						case "collision":
-							if (Reflect.hasField(layer, "tiles"))
-								layers.push(new TiledLayer("collision", layer.tiles, 32));
-						case "tiled":
-							if (Reflect.hasField(layer, "set") && Reflect.hasField(layer, "tiles"))
-								layers.push(new TiledLayer(layer.set, layer.tiles));
-					}
-				}
 			}
 		} else
 			throw "No `layers` field found.";
