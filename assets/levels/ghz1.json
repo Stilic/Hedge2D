@@ -1,3 +1,3 @@
 {
-  "layers": [{"type": "tiled", "set": "ghz", "tiles": [[2]]}]
+  "layers": [{"type": "collision", "tiles": [[2]]}]
 }

@@ -19,7 +19,7 @@ interface ITileContainer {
 
 @:access(sonic.Object)
 class TiledLayer extends Layer implements ILoader implements IDrawable implements ITileContainer {
-	public var tileSize(default, null):Int = 16;
+	public var tileSize(default, null):Int;
 
 	public var texture(default, null):Texture;
 	public var tiles:Array<Array<Int>>;
@@ -27,9 +27,10 @@ class TiledLayer extends Layer implements ILoader implements IDrawable implement
 	public var lines(default, null):Int;
 	public var columns(default, null):Int;
 
-	public function new(tileset:String, tiles:Array<Array<Int>>) {
+	public function new(tileset:String, tiles:Array<Array<Int>>, tileSize:Int = 16) {
 		texture = LoadTexture('assets/tilesets/${tileset}.png');
 
+		this.tileSize = tileSize;
 		lines = Std.int(texture.height / tileSize);
 		columns = Std.int(texture.width / tileSize);
 
@@ -95,12 +96,12 @@ class Level implements ILoader {
 
 	public var layers(default, null):Array<Layer> = [];
 
-	public function new(id:String) {
+	public function new(id:String, debug:Bool = true) {
 		path = 'assets/levels/$id.json';
 		final data = Json.parse(File.getContent(path));
 		if (Reflect.hasField(data, "layers")) {
 			for (layer in cast(data.layers, Array<Dynamic>)) {
-				if (Reflect.hasField(layer, "type"))
+				if (!debug && Reflect.hasField(layer, "type")) {
 					switch (cast(layer.type, String)) {
 						case "collision":
 							if (Reflect.hasField(layer, "tiles"))
@@ -109,6 +110,16 @@ class Level implements ILoader {
 							if (Reflect.hasField(layer, "set") && Reflect.hasField(layer, "tiles"))
 								layers.push(new TiledLayer(layer.set, layer.tiles));
 					}
+				} else {
+					switch (cast(layer.type, String)) {
+						case "collision":
+							if (Reflect.hasField(layer, "tiles"))
+								layers.push(new TiledLayer("collision", layer.tiles, 32));
+						case "tiled":
+							if (Reflect.hasField(layer, "set") && Reflect.hasField(layer, "tiles"))
+								layers.push(new TiledLayer(layer.set, layer.tiles));
+					}
+				}
 			}
 		} else
 			throw "No `layers` field found.";
