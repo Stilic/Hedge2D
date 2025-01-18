@@ -19,6 +19,7 @@ interface ITileContainer {
 
 @:access(sonic.Object)
 class TiledLayer extends Layer implements ILoader implements IDrawable implements ITileContainer {
+	public var set(default, null):String;
 	public var tileSize(default, null):Int;
 
 	public var texture(default, null):Texture;
@@ -27,8 +28,9 @@ class TiledLayer extends Layer implements ILoader implements IDrawable implement
 	public var lines(default, null):Int;
 	public var columns(default, null):Int;
 
-	public function new(tileset:String, tiles:Array<Array<Int>>, tileSize:Int = 16) {
-		texture = LoadTexture('assets/tilesets/${tileset}.png');
+	public function new(set:String, tiles:Array<Array<Int>>, tileSize:Int = 16) {
+		this.set = set;
+		texture = LoadTexture('assets/tilesets/${set}.png');
 
 		this.tileSize = tileSize;
 		lines = Std.int(texture.height / tileSize);
@@ -96,7 +98,7 @@ class Level implements ILoader {
 
 	public var layers(default, null):Array<Layer> = [];
 
-	public function new(id:String, debug:Bool = true) {
+	public function new(id:String) {
 		path = 'assets/levels/$id.json';
 		final data = Json.parse(File.getContent(path));
 		if (Reflect.hasField(data, "layers")) {
@@ -104,9 +106,8 @@ class Level implements ILoader {
 				if (Reflect.hasField(layer, "type"))
 					switch (cast(layer.type, String)) {
 						case "collision":
-							if (Reflect.hasField(layer, "tiles"))
-							{
-								if (debug)
+							if (Reflect.hasField(layer, "tiles")) {
+								if (Main.DEBUG)
 									layers.push(new TiledLayer("collision", layer.tiles));
 								else
 									layers.push(new CollisionLayer(layer.tiles));
@@ -134,8 +135,18 @@ class Level implements ILoader {
 		}
 	}
 
-	// public function save() {
-	// 	final data:LevelData = {tileset: tileset, tiles: tiles};
-	// 	File.saveContent(path, Json.stringify(data));
-	// }
+	public function save() {
+		final layersData:Array<Any> = [];
+		for (layer in layers) {
+			if (layer is TiledLayer) {
+				final layer:TiledLayer = cast layer;
+				if (Main.DEBUG && layer.set == "collision")
+					layersData.push({type: "collision", tiles: layer.tiles});
+				else
+					layersData.push({type: "tiled", set: layer.set, tiles: layer.tiles});
+			} else if (layer is CollisionLayer)
+				layersData.push({type: "collision", tiles: cast(layer, CollisionLayer).tiles});
+		}
+		File.saveContent(path, Json.stringify({layers: layersData}));
+	}
 }

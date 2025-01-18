@@ -5,9 +5,23 @@ import sonic.Level;
 import sonic.characters.Sonic;
 
 class Main {
+	public static inline var DEBUG:Bool = true;
+
 	var level:Level;
+	var layers:Array<TiledLayer> = [];
 	var currentLayer:TiledLayer;
-	var tile = 1;
+	var currentLayerIndex:Int = 0;
+	var tile:Int = 1;
+
+	function updateCurrentLayer(change:Int) {
+		currentLayerIndex += change;
+		if (currentLayerIndex < 0)
+			currentLayerIndex = layers.length - 1;
+		else if (currentLayerIndex > layers.length - 1)
+			currentLayerIndex = 0;
+		trace(currentLayerIndex);
+		currentLayer = layers[currentLayerIndex];
+	}
 
 	function addTile(x:Int, y:Int) {
 		final tiles = currentLayer.tiles;
@@ -37,14 +51,13 @@ class Main {
 
 		level = new Level("ghz1");
 		for (layer in level.layers) {
-			if (layer is TiledLayer) {
-				currentLayer = cast layer;
-				break;
-			}
+			if (layer is TiledLayer)
+				layers.push(cast layer);
 		}
+		currentLayer = layers[currentLayerIndex];
 
 		final sonic = new Sonic();
-		sonic.y = 5 * currentLayer.tileSize;
+		sonic.y = 5 * 16;
 
 		final editorTileColor = new Color(255, 255, 255, 128);
 		var editorLastX = -1;
@@ -52,7 +65,11 @@ class Main {
 
 		while (!WindowShouldClose()) {
 			final dt = GetFrameTime();
-			sonic.update(dt);
+
+			if (IsKeyPressed(KEY_DOWN) || IsKeyPressedRepeat(KEY_DOWN))
+				updateCurrentLayer(-1);
+			else if (IsKeyPressed(KEY_UP) || IsKeyPressedRepeat(KEY_UP))
+				updateCurrentLayer(1);
 
 			final mouseWheelMove = GetMouseWheelMove();
 			if (mouseWheelMove != 0) {
@@ -79,15 +96,16 @@ class Main {
 			else if (IsMouseButtonPressed(1))
 				removeTile(tileX, tileY);
 
-			// if ((IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyPressed(KEY_S))
-			// 	level.save();
+			if ((IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyPressed(KEY_S))
+				level.save();
+
+			sonic.update(dt);
 
 			BeginDrawing();
 			ClearBackground(BLUE);
 
 			sonic.draw();
-			level.draw();
-
+			currentLayer.draw();
 			currentLayer.drawTile(tileX * currentLayer.tileSize, tileY * currentLayer.tileSize, tile, editorTileColor);
 
 			EndDrawing();
