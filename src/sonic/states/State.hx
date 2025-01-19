@@ -1,8 +1,6 @@
 package sonic.states;
 
-import sonic.Common;
-
-class State implements ILoader implements IDrawable {
+class State {
 	public function update(frameTime:Float) {}
 
 	public function draw() {}

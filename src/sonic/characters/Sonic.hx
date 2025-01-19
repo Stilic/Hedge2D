@@ -46,7 +46,7 @@ class Sonic extends Object {
 		heightRadius = 19;
 		hitboxWidthRadius = 8;
 		hitboxHeightRadius = heightRadius - 3;
-		texture = LoadTexture("assets/sonic.png");
+		texture = Cache.getTexture("sonic");
 	}
 
 	inline function applyFriction(friction:Float)

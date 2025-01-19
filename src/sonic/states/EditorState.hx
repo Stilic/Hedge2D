@@ -6,18 +6,34 @@ import sonic.Util;
 import sonic.Level;
 
 class EditorState extends State {
-	final editorTileColor = new Color(255, 255, 255, 128);
+	static final tileColor = new Color(255, 255, 255, 128);
 
 	var level:Level;
 	var layers:Array<TiledLayer> = [];
 	var currentLayer:TiledLayer;
 	var currentLayerIndex:Int = 0;
-	var tile:Int = 1;
 
+	var tile:Int = 1;
 	var tileX:Int;
 	var tileY:Int;
 	var lastX:Int;
 	var lastY:Int;
+
+	public function new(?level:Level) {
+		level ??= new Level("ghz1");
+		this.level = level;
+
+		for (i in 0...level.layers.length) {
+			final layer = level.layers[i];
+			if (layer is CollisionLayer) {
+				final layer = new TiledLayer("collision", cast(layer, CollisionLayer).tiles);
+				level.layers[i] = layer;
+				layers.push(layer);
+			} else if (layer is TiledLayer)
+				layers.push(cast layer);
+		}
+		currentLayer = layers[currentLayerIndex];
+	}
 
 	function updateCurrentLayer(change:Int) {
 		currentLayerIndex += change;
@@ -51,16 +67,10 @@ class EditorState extends State {
 		}
 	}
 
-	public function new() {
-		level = new Level("ghz1");
-		for (layer in level.layers) {
-			if (layer is TiledLayer)
-				layers.push(cast layer);
-		}
-		currentLayer = layers[currentLayerIndex];
-	}
-
 	override function update(frameTime:Float) {
+		if (IsKeyPressed(KEY_ENTER))
+			Main.state = new PlayState(level);
+
 		super.update(frameTime);
 
 		if (IsKeyPressed(KEY_DOWN) || IsKeyPressedRepeat(KEY_DOWN))
@@ -99,12 +109,18 @@ class EditorState extends State {
 
 	override function draw() {
 		super.draw();
+
 		currentLayer.draw();
-		currentLayer.drawTile(tileX * currentLayer.tileSize, tileY * currentLayer.tileSize, tile, editorTileColor);
+		currentLayer.drawTile(tileX * currentLayer.tileSize, tileY * currentLayer.tileSize, tile, tileColor);
 	}
 
 	override function unload() {
 		super.unload();
-		level.unload();
+
+		final key = '${Cache.PREFIX}images/tilesets/collision.png';
+		if (Cache.textures.exists(key)) {
+			UnloadTexture(Cache.textures.get(key));
+			Cache.textures.remove(key);
+		}
 	}
 }

@@ -4,21 +4,14 @@ import haxe.Json;
 import sys.io.File;
 import raylib.Raylib.*;
 import raylib.Types;
-import sonic.Common;
 
+// TODO: add objects
 class Layer {
-	// TODO: add objects
-}
-
-interface ITileContainer {
-	var tileSize(default, null):Int;
-	var tiles:Array<Array<Int>>;
-	var lines(default, null):Int;
-	var columns(default, null):Int;
+	public function draw() {}
 }
 
 @:access(sonic.Object)
-class TiledLayer extends Layer implements ILoader implements IDrawable implements ITileContainer {
+class TiledLayer extends Layer {
 	public var set(default, null):String;
 	public var tileSize(default, null):Int;
 
@@ -30,7 +23,7 @@ class TiledLayer extends Layer implements ILoader implements IDrawable implement
 
 	public function new(set:String, tiles:Array<Array<Int>>, tileSize:Int = 16) {
 		this.set = set;
-		texture = LoadTexture('assets/tilesets/${set}.png');
+		texture = Cache.getTexture('tilesets/${set}');
 
 		this.tileSize = tileSize;
 		lines = Std.int(texture.height / tileSize);
@@ -51,7 +44,7 @@ class TiledLayer extends Layer implements ILoader implements IDrawable implement
 		DrawTextureRec(texture, Object.source, Object.origin, color);
 	}
 
-	public function draw() {
+	override function draw() {
 		var set:Array<Int>;
 		var y:Int;
 		for (i in 0...tiles.length) {
@@ -64,13 +57,9 @@ class TiledLayer extends Layer implements ILoader implements IDrawable implement
 			}
 		}
 	}
-
-	public function unload() {
-		UnloadTexture(texture);
-	}
 }
 
-class CollisionLayer extends Layer implements ILoader implements ITileContainer {
+class CollisionLayer extends Layer {
 	public var tileSize(default, null):Int = 16;
 
 	public var image(default, null):Image;
@@ -80,20 +69,16 @@ class CollisionLayer extends Layer implements ILoader implements ITileContainer 
 	public var columns(default, null):Int;
 
 	public function new(tiles:Array<Array<Int>>) {
-		image = LoadImage('assets/tilesets/collision.png');
+		image = Cache.getImage('tilesets/collision');
 
 		lines = Std.int(image.height / tileSize);
 		columns = Std.int(image.width / tileSize);
 
 		this.tiles = tiles;
 	}
-
-	public function unload() {
-		UnloadImage(image);
-	}
 }
 
-class Level implements ILoader {
+class Level {
 	var path:String;
 
 	public var layers(default, null):Array<Layer> = [];
@@ -106,12 +91,8 @@ class Level implements ILoader {
 				if (Reflect.hasField(layer, "type"))
 					switch (cast(layer.type, String)) {
 						case "collision":
-							if (Reflect.hasField(layer, "tiles")) {
-								if (Main.DEBUG)
-									layers.push(new TiledLayer("collision", layer.tiles));
-								else
-									layers.push(new CollisionLayer(layer.tiles));
-							}
+							if (Reflect.hasField(layer, "tiles"))
+								layers.push(new CollisionLayer(layer.tiles));
 						case "tiled":
 							if (Reflect.hasField(layer, "set") && Reflect.hasField(layer, "tiles"))
 								layers.push(new TiledLayer(layer.set, layer.tiles));
@@ -122,17 +103,8 @@ class Level implements ILoader {
 	}
 
 	public function draw() {
-		for (layer in layers) {
-			if (layer is IDrawable)
-				cast(layer, IDrawable).draw();
-		}
-	}
-
-	public function unload() {
-		for (layer in layers) {
-			if (layer is ILoader)
-				cast(layer, ILoader).unload();
-		}
+		for (layer in layers)
+			layer.draw();
 	}
 
 	public function save() {
@@ -140,7 +112,7 @@ class Level implements ILoader {
 		for (layer in layers) {
 			if (layer is TiledLayer) {
 				final layer:TiledLayer = cast layer;
-				if (Main.DEBUG && layer.set == "collision")
+				if (layer.set == "collision")
 					layersData.push({type: "collision", tiles: layer.tiles});
 				else
 					layersData.push({type: "tiled", set: layer.set, tiles: layer.tiles});
