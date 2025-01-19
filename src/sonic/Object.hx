@@ -41,7 +41,7 @@ class Object implements IDrawable {
 	public var flipX:Bool = false;
 	public var flipY:Bool = false;
 
-	public function update(dt:Float) {
+	public function update(frameTime:Float) {
 		// TODO: animation system
 	}
 

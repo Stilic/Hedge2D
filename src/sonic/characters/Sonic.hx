@@ -55,7 +55,7 @@ class Sonic extends Object {
 	inline function bleed(n:Float):Float
 		return n - Std.int(n / 0.125) / 256;
 
-	override function update(dt:Float) {
+	override function update(frameTime:Float) {
 		if (onGround) {
 			switch (action) {
 				case Idle:
@@ -172,6 +172,6 @@ class Sonic extends Object {
 		x += xSpeed;
 		y += ySpeed;
 
-		super.update(dt);
+		super.update(frameTime);
 	}
 }
