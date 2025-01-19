@@ -41,7 +41,6 @@ class EditorState extends State {
 			currentLayerIndex = layers.length - 1;
 		else if (currentLayerIndex > layers.length - 1)
 			currentLayerIndex = 0;
-		trace(currentLayerIndex);
 		currentLayer = layers[currentLayerIndex];
 	}
 

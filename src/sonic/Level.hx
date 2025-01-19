@@ -105,12 +105,16 @@ class Level {
 	}
 
 	public function draw(?mainLayer:Layer) {
+		final hasMainLayer = mainLayer != null;
 		for (layer in layers) {
-			if (mainLayer != null && mainLayer != layer)
-				layer.draw(127);
-			else
+			if (hasMainLayer) {
+				if (mainLayer != layer)
+					layer.draw(127);
+			} else
 				layer.draw();
 		}
+		if (hasMainLayer)
+			mainLayer.draw();
 	}
 
 	public function save() {
