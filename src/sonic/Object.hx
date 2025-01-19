@@ -7,6 +7,7 @@ class Object {
 	static final source:Rectangle = new Rectangle(0, 0, 0, 0);
 	static final destination:Rectangle = new Rectangle(0, 0, 0, 0);
 	static final origin:Vector2 = new Vector2(0, 0);
+	static final color:Color = new Color(255, 255, 255, 255);
 
 	static inline function getSizeFromRadius(radius:Int):Int
 		return radius == 0 ? 0 : radius * 2 + 1;
@@ -61,7 +62,7 @@ class Object {
 		origin.x = halfWidth;
 		origin.y = halfHeight;
 
-		DrawTexturePro(texture, source, destination, origin, angle, WHITE);
+		DrawTexturePro(texture, source, destination, origin, angle, color);
 	}
 
 	@:noCompletion

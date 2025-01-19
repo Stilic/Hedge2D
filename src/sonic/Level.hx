@@ -7,7 +7,7 @@ import raylib.Types;
 
 // TODO: add objects
 class Layer {
-	public function draw() {}
+	public function draw(alpha:Int = 255) {}
 }
 
 @:access(sonic.Object)
@@ -32,7 +32,7 @@ class TiledLayer extends Layer {
 		this.tiles = tiles;
 	}
 
-	public function drawTile(x:Float, y:Float, tile:Int, color:Color) {
+	public function drawTile(x:Float, y:Float, tile:Int, alpha:Int) {
 		Object.source.x = tile * tileSize;
 		Object.source.y = Std.int(tile / columns) * tileSize;
 		Object.source.width = tileSize;
@@ -41,10 +41,12 @@ class TiledLayer extends Layer {
 		Object.origin.x = x;
 		Object.origin.y = y;
 
-		DrawTextureRec(texture, Object.source, Object.origin, color);
+		Object.color.a = alpha;
+
+		DrawTextureRec(texture, Object.source, Object.origin, Object.color);
 	}
 
-	override function draw() {
+	override function draw(alpha:Int = 255) {
 		var set:Array<Int>;
 		var y:Int;
 		for (i in 0...tiles.length) {
@@ -53,7 +55,7 @@ class TiledLayer extends Layer {
 			for (x in 0...set.length) {
 				final tile = set[x];
 				if (tile != 0)
-					drawTile(x * tileSize, y, tile - 1, WHITE);
+					drawTile(x * tileSize, y, tile - 1, alpha);
 			}
 		}
 	}
@@ -102,9 +104,13 @@ class Level {
 			throw "No `layers` field found.";
 	}
 
-	public function draw() {
-		for (layer in layers)
-			layer.draw();
+	public function draw(?mainLayer:Layer) {
+		for (layer in layers) {
+			if (mainLayer != null && mainLayer != layer)
+				layer.draw(127);
+			else
+				layer.draw();
+		}
 	}
 
 	public function save() {

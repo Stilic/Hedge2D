@@ -110,8 +110,8 @@ class EditorState extends State {
 	override function draw() {
 		super.draw();
 
-		currentLayer.draw();
-		currentLayer.drawTile(tileX * currentLayer.tileSize, tileY * currentLayer.tileSize, tile, tileColor);
+		level.draw(currentLayer);
+		currentLayer.drawTile(tileX * currentLayer.tileSize, tileY * currentLayer.tileSize, tile, 255);
 	}
 
 	override function unload() {
