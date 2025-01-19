@@ -10,9 +10,6 @@ class Main {
 		InitWindow(320, 224, "Hedge2D");
 		SetTargetFPS(60);
 
-		// final sonic = new Sonic();
-		// sonic.y = 5 * 16;
-
 		state = new EditorState();
 
 		while (!WindowShouldClose()) {
@@ -20,12 +17,8 @@ class Main {
 
 			state.update(frameTime);
 
-			// sonic.update(frameTime);
-
 			BeginDrawing();
 			ClearBackground(BLUE);
-
-			// sonic.draw();
 
 			state.draw();
 
