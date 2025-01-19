@@ -104,17 +104,21 @@ class Level {
 			throw "No `layers` field found.";
 	}
 
-	public function draw(?mainLayer:Layer) {
-		final hasMainLayer = mainLayer != null;
+	public function draw() {
+		for (layer in layers)
+			layer.draw();
+	}
+
+	public function drawDebug(mainLayer:Layer):Array<Layer> {
+		final topLayers:Array<Layer> = [];
 		for (layer in layers) {
-			if (hasMainLayer) {
-				if (mainLayer != layer)
-					layer.draw(127);
-			} else
-				layer.draw();
+			if (layer is TiledLayer && cast(layer, TiledLayer).set == "collision")
+				topLayers.push(layer);
+			else if (layer != mainLayer)
+				layer.draw(127);
 		}
-		if (hasMainLayer)
-			mainLayer.draw();
+		mainLayer.draw();
+		return topLayers;
 	}
 
 	public function save() {

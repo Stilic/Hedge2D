@@ -109,8 +109,10 @@ class EditorState extends State {
 	override function draw() {
 		super.draw();
 
-		level.draw(currentLayer);
+		final topLayers = level.drawDebug(currentLayer);
 		currentLayer.drawTile(tileX * currentLayer.tileSize, tileY * currentLayer.tileSize, tile, 255);
+		for (layer in topLayers)
+			layer.draw(127);
 	}
 
 	override function unload() {
